@@ -38,6 +38,7 @@
     "vue-mqtt": "^2.0.3",
     "vue-mqttsocket": "^0.2.0",
     "vue-slick-carousel": "^1.0.6",
+    "vue2-daterange-picker": "^0.6.3",
     "vue2-transitions": "^0.2.3"
   },
   "devDependencies": {

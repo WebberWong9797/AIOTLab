@@ -1,6 +1,7 @@
 <template>
   <div class="row">
     <!-- Big Chart -->
+    <datePicker/>
     <div class="col-12">
       <card type="chart" class="bigChart">
         <template slot="header">
@@ -177,6 +178,7 @@ import * as chartConfigs from "@/components/Charts/config";
 import TaskList from "@/components/Dashboard/TaskList";
 import config from "@/config";
 import { Table, TableColumn } from "element-ui";
+import datePicker from "@/components/dataPicker/datePicker.vue";
 
 let bigChartData = [[0], [0], [0]];
 let bigChartLabels = ["Date"];
@@ -203,6 +205,7 @@ export default {
     TaskList,
     [Table.name]: Table,
     [TableColumn.name]: TableColumn,
+    datePicker,
   },
   data() {
     return {
@@ -373,7 +376,11 @@ export default {
   async created() {
     try {
       const dataCount = await this.$strapi.$sensors.count();
+       /*updated_at,between,this.$store.state.pickerDateInfo.endDate,
+       and,this.$store.state.pickerDateInfo.endDate*/
       console.log(dataCount);
+      console.log(this.$store.state.pickerDateInfo.startDate)
+      console.log(this.$store.state.pickerDateInfo.endDate)
       let datasize = 100;
       let temp = [],
         humid = [],

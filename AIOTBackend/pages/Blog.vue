@@ -43,9 +43,18 @@
                 <mdb-card-title>{{ post.title }}</mdb-card-title>
                 <mdb-card-text class="blogbody">{{ post.blurb }}</mdb-card-text>
                 <span>Tags : </span><br />
-                <b-button color="#252525" dark class="btn-sm">{{
-                  post.category
+              <b-row
+            v-for="(tag, i) in post.tags"
+            :key="i"
+            class="d-flex"
+            cols="12"
+            md="4"
+          >
+          <b-button color="#252525" dark class="btn-sm">{{
+                  tag?tag.tag_name:'None'
                 }}</b-button>
+          </b-row>
+                
               </mdb-card-body>
             </mdb-card>
           </b-col>
@@ -125,11 +134,12 @@ export default {
               "https://cms.aiotlab.hk/uploads/small_no_image_b495419a66.png?2144.96499998495";
           const blog = {
             id: data[i].id,
-            category: data[i].Category,
+            category: data[i].Category===null?'None':data[i].Category,
             date: data[i].updated_at,
             blurb: data[i].description,
             src: url,
             title: data[i].title,
+            tags:data[i].tags,
           };
           console.log(blog);
           this.posts.push(blog);
@@ -163,6 +173,7 @@ export default {
             blurb: result.data[i].description,
             src: this.$store.state.BASE_URL + url,
             title: result.data[i].title,
+            tags:result.data[i].tags,
           };
           console.log(blog);
           this.posts.push(blog);

@@ -24,8 +24,7 @@ import LoadingPanel from './LoadingPanel.vue';
 import BasePagination from './BasePagination.vue';
 
 import SidebarPlugin from './SidebarPlugin';
-
-
+import datePicker from './dataPicker/datePicker.vue'
 export {
   BaseCheckbox,
   IconCheckbox,
@@ -47,5 +46,6 @@ export {
   RouteBreadCrumb,
   Modal,
   BaseButton,
-  LoadingPanel
+  LoadingPanel,
+  datePicker,
 };

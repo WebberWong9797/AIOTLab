@@ -21,6 +21,10 @@ export const state = () => ({
     youtube: '',
     category: '',
   },
+  pickerDateInfo:{
+   startDate:(new Date(Date.now())).toISOString(),
+   endDate:(new Date(Date.now())).toISOString(),
+  },
 })
 export const mutations = {
   logout(state) {
@@ -58,6 +62,10 @@ export const mutations = {
   SET_DRAWER(state, payload) {
     state.drawer = payload
   },
+  setPickerDateInfo(state,result){
+  state.pickerDateInfo.startDate=result.startDate
+  state.pickerDateInfo.endDate=result.endDate
+  },
 }
 export const getters = {
   getuserInfo: (state) => {
@@ -66,6 +74,9 @@ export const getters = {
   getprojectInfo: (state) => {
     return state.projectInfo
   },
+  getPickerDateInfo:(state)=>{
+    return state.pickerDateInfo
+  }
 }
 export const actions = {}
 export const modules = {}
