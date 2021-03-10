@@ -9,33 +9,35 @@
           <b-col
             v-for="(post, i) in posts"
             :key="i"
-            class="d-flex"
+            :style="post.show"
             cols="12"
             md="4"
           >
-            <mdb-card :hidden="!post.show" class="blogcard">
-              <img class="blogimg" :src="post.src" alt="no image" />
-              <mdb-card-body>
-                <mdb-card-title>{{ post.title }}</mdb-card-title>
-                <mdb-card-text class="blogbody">{{ post.blurb }}</mdb-card-text>
-                <span>Tags : </span><br />
-                <b-row
-                  v-for="(tag, i) in post.tags"
-                  :key="i"
-                  class="d-flex"
-                  cols="12"
-                  md="4"
-                >
-                  <b-button
-                    color="#252525"
-                    dark
-                    class="btn-sm"
-                    @click="getCategory2(tag.tag_name)"
-                    >{{ tag ? tag.tag_name : "None" }}</b-button
+              <mdb-card class="blogcard">
+                <img class="blogimg" :src="post.src" alt="no image" />
+                <mdb-card-body>
+                  <mdb-card-title>{{ post.title }}</mdb-card-title>
+                  <mdb-card-text class="blogbody">{{
+                    post.blurb
+                  }}</mdb-card-text>
+                  <span>Tags : </span><br />
+                  <b-row
+                    v-for="(tag, i) in post.tags"
+                    :key="i"
+                    class="d-flex"
+                    cols="12"
+                    md="4"
                   >
-                </b-row>
-              </mdb-card-body>
-            </mdb-card>
+                    <b-button
+                      color="#252525"
+                      dark
+                      class="btn-sm"
+                      @click="getCategory2(tag.tag_name)"
+                      >{{ tag ? tag.tag_name : "None" }}</b-button
+                    >
+                  </b-row>
+                </mdb-card-body>
+              </mdb-card>
           </b-col>
         </b-row>
       </b-container>
@@ -119,7 +121,7 @@ export default {
             src: url,
             title: data[i].title,
             tags: data[i].tags,
-            show: true,
+            show: 'display: flex;',
           };
           console.log(blog);
           this.posts.push(blog);
@@ -131,18 +133,18 @@ export default {
   },
   methods: {
     async getCategory2(item) {
-      console.log(item)
+      console.log(item);
       //var post = this.posts
       if (item == "all") {
-        for (let i = 0; i < this.posts.length; i++) this.posts[i].show = true;
+        for (let i = 0; i < this.posts.length; i++) this.posts[i].show = 'display: flex;';
       } else {
         for (let i = 0; i < this.posts.length; i++) {
-          console.log(item)
+          console.log(item);
           var obj = [];
           for (let j = 0; j < this.posts[i].tags.length; j++)
             obj.push(this.posts[i].tags[j].tag_name);
-          if (obj.includes(item)) this.posts[i].show = true;
-          else this.posts[i].show = false;
+          if (obj.includes(item)) this.posts[i].show = 'display: flex;';
+          else this.posts[i].show = 'display: none;';
         }
       }
     },
