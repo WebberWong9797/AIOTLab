@@ -23,7 +23,7 @@
           <a class="nav-link" :href="link">{{ link }} </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">LOGIN</a>
+          <a class="nav-link" href="#" @click="login()">LOGIN</a>
         </li>
       </ul>
     </base-nav>
@@ -53,6 +53,11 @@ export default {
     let docClasses = document.body.classList;
     docClasses.add("white-content");
   },
+  methods: {
+    login(){
+      this.$router.push("/login")
+    }
+  }
 };
 </script>
 

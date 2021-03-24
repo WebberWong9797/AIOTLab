@@ -44,6 +44,7 @@ export default {
   /*
    ** Global CSS
    */
+  target: 'server',
   css: [
     'assets/css/demo.css',
     'assets/css/nucleo-icons.css',

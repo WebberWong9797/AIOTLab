@@ -1,15 +1,17 @@
 <template>
-  <div>
+  <div class="login">
+    <b-row>
+      <span class="heading">Sengital AIOT Lab</span>
+    </b-row>
     <b-row>
       <base-input
-        class="newM col-lg-4 col-md-3 col-sm-4 col-xs-6 col-xs-6"
-        label="ph Value: "
+        v-model="username"
+        class="newM col-lg-12 col-md-3 col-sm-4 col-xs-6 col-xs-6"
+        label="Username / Email: "
       ></base-input>
-      <base-input
-        v-model="password"
-        class=""
-        label="Password: "
-      ></base-input>
+    </b-row>
+    <b-row>
+      <base-input v-model="password" type="password" class="newM col-lg-12 col-md-3 col-sm-4 col-xs-6 col-xs-6" label="Password: "></base-input>
     </b-row>
     <div class="errmsg">{{ this.errmsg }}</div>
     <base-button
@@ -25,7 +27,7 @@
 <script>
 export default {
   name: "login",
-  layout: "navbar",
+  layout: "blank",
   data() {
     return {
       username: "",
@@ -42,8 +44,40 @@ export default {
     },
   },
   methods: {
-    
+    async login() {
+      try{ 
+        let result = await this.$strapi.login({
+        identifier: this.username,
+        password: this.password,
+      });
+      //console.log(result)
+      //console.log(this.$strapi.user)
+      this.$store.commit('userInfo', this.$strapi.user)
+      //this.$store.getters.getuserInfo.avatar)
+      this.$router.push('/dashboard')
+      }catch(e){
+        //console.log(e.toString().replace("HTTPError: ",""))
+        this.errmsg = e.toString().replace("HTTPError: ","")
+
+      }
+
+    },
   },
 };
 </script>
-<style></style>
+<style>
+.errmsg {
+  color: red;
+}
+.login {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-top: -100px;
+  margin-left: -200px;
+}
+.heading {
+  padding-left: 15px;
+  font-size: 50px;
+}
+</style>

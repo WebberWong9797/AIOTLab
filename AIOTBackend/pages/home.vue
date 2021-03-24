@@ -87,6 +87,7 @@ export default {
       console.log(result.error);
     } else {
       this.events = result.data.home_banner;
+      console.log(result.data.home_banner)
     }
   },
 };

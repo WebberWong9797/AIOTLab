@@ -1,11 +1,9 @@
 <template>
 <div id="dataPickerDiv">
-<p>{{this.$store.state.pickerDateInfo.startDate}}</p>
-<p>{{this.$store.state.pickerDateInfo.endDate}}</p>
 <date-range-picker
             ref="picker"
             :opens="opens"
-            :locale-data="{ firstDay: 1, format: 'DD-MM-YYYY HH:mm:ss' }"
+            :locale-data="{ firstDay: 1, format: 'YYYY-MM-DD' }"
             :minDate="minDate" :maxDate="maxDate"
             :singleDatePicker="singleDatePicker"
             :timePicker="timePicker"
