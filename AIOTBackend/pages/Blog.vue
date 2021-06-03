@@ -98,7 +98,13 @@ export default {
       photo: "",
     };
   },
+  mounted() {
+    let docClasses = document.body.classList;
+    docClasses.add("white-content");
+  },
   created() {
+    let docClasses = document.body.classList;
+    docClasses.add("white-content");
     fetch("https://cms.aiotlab.hk/projects")
       .then((res) => res.json())
       .then((data) => {

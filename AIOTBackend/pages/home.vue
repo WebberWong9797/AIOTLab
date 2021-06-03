@@ -90,6 +90,10 @@ export default {
       console.log(result.data.home_banner)
     }
   },
+  mounted() {
+    let docClasses = document.body.classList;
+    docClasses.add("white-content");
+  },
 };
 </script>
 <style>

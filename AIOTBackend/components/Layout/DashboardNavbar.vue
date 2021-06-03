@@ -18,9 +18,10 @@
       </div>
       <a class="navbar-brand ml-xl-3 ml-5" href="#pablo">{{ routeName }}</a>
     </div>
-
+    <span class="d-lg-none">{{this.$strapi.user.username}}</span>
     <ul class="navbar-nav" :class="$rtl.isRTL ? 'mr-auto' : 'ml-auto'">
       <div v-if="this.$strapi.user">
+        
         <base-dropdown
           tag="li"
           :menu-on-right="!$rtl.isRTL"
@@ -29,18 +30,14 @@
           title-classes="nav-link"
           menu-classes="dropdown-navbar"
         >
-          <template slot="title">
+          <template slot="title">{{this.$strapi.user.username}}
             <div class="photo"><img :src="this.$store.getters.getuserInfo.avatar" /></div>
             <b class="caret d-none d-lg-block d-xl-block"></b>
-            <p class="d-lg-none">Log out</p>
           </template>
-          <li class="nav-link">
-            <a href="#" class="nav-item dropdown-item" @click="profile()">Profile</a>
+          <!--<li class="nav-link">
+            <span href="#" class="nav-item dropdown-item">Hello </span>
           </li>
-          <li class="nav-link">
-            <a href="#" class="nav-item dropdown-item" >Settings</a>
-          </li>
-          <div class="dropdown-divider"></div>
+          <div class="dropdown-divider"></div>-->
           <li class="nav-link">
             <a href="#" class="nav-item dropdown-item" @click="logout()"
               >Log out</a
@@ -61,6 +58,16 @@ export default {
     CollapseTransition,
     BaseNav,
     Modal,
+  },
+  async mounted(){
+    //console.log(this.$strapi.user)
+    if(this.$strapi.user!==null){
+      let result = await this.$strapi.find('users', {
+        username: this.$strapi.user.username
+      });
+      //console.log("result: ", result)
+      this.$store.commit('userInfo', result[0])
+    }
   },
   computed: {
     routeName() {

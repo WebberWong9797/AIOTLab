@@ -3,17 +3,17 @@
     <div class="container-fluid">
       <ul class="nav">
         <li class="nav-item">
-          <a href="home" rel="noopener" class="nav-link">
+          <a href="#" rel="noopener" class="nav-link" @click="white('home')">
             Home
           </a>
         </li>
         <li class="nav-item">
-          <a href="about" target="_blank" rel="noopener" class="nav-link">
+          <a href="#" rel="noopener" class="nav-link" @click="white('about')">
             About Us
           </a>
         </li>
         <li class="nav-item">
-          <a href="/blog" target="_blank" rel="noopener" class="nav-link">
+          <a href="#" rel="noopener" class="nav-link" @click="white('blog')">
             Blog
           </a>
         </li>
@@ -33,6 +33,13 @@ export default {
     return {
       year: new Date().getFullYear(),
     };
+  },
+  methods: {
+    white(id) {
+      let docClasses = document.body.classList;
+      docClasses.add("white-content");
+      this.$router.push(id)
+    },
   },
 };
 </script>

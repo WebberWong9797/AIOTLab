@@ -51,7 +51,7 @@ export default {
         password: this.password,
       });
       //console.log(result)
-      //console.log(this.$strapi.user)
+      console.log(this.$strapi.user)
       this.$store.commit('userInfo', this.$strapi.user)
       //this.$store.getters.getuserInfo.avatar)
       this.$router.push('/dashboard')

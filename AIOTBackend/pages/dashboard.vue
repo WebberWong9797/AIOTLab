@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <!-- Big Chart -->
-    <datePicker/>
+    <!--<datePicker />-->
     <div class="col-12">
       <card type="chart" class="bigChart">
         <template slot="header">
@@ -54,7 +54,7 @@
       </card>
     </div>
 
-    <!-- Small charts -->
+    <!-- Small charts 
     <div class="col-lg-4" :class="{ 'text-right': isRTL }">
       <card type="chart">
         <template slot="header">
@@ -113,32 +113,60 @@
         </div>
       </card>
     </div>
+    -->
     <div class="col-lg-5">
       <card type="tasks" :header-classes="{ 'text-right': isRTL }">
         <template slot="header" class="d-inline">
-          <h6 class="title d-inline">Tasks (5)</h6>
-          <p class="card-category d-inline">Today</p>
-
-          <base-dropdown
-            menu-on-right=""
-            tag="div"
-            title-classes="btn btn-link btn-icon"
-            class="float-right"
+          <h6
+            class="title d-inline col-lg-12"
+            style="font-size: 1.2rem; margin-bottom: 20px;"
           >
-            <i slot="title" class="tim-icons icon-settings-gear-63"></i>
-            <a class="dropdown-item" href="#pablo"> Action </a>
-            <a class="dropdown-item" href="#pablo"> Another action </a>
-            <a class="dropdown-item" href="#pablo"> Something else </a>
-          </base-dropdown>
+            Date Picker
+          </h6>
+          <p class="card-category d-inline col-lg-1">
+            &nbsp;&nbsp;{{ startDate }}
+          </p>
+          <p class="card-category d-inline col-lg-1">-</p>
+          <p class="card-category d-inline col-lg-1">{{ endDate }}</p>
+          <base-input
+            id="startDate"
+            v-model="startDate"
+            type="date"
+            :min="minDate"
+            :max="maxDate"
+            class="col-lg-12 col-md-3 col-sm-4 col-xs-6 col-xs-6"
+            label="Start Date: "
+          ></base-input>
+          <base-input
+            id="endDate"
+            v-model="endDate"
+            type="date"
+            :min="minDate"
+            :max="maxDate"
+            class="col-lg-12 col-md-3 col-sm-4 col-xs-6 col-xs-6"
+            label="End Date: "
+          ></base-input>
+          <div class="col-lg-3"></div>
+          <base-button
+            type="primary"
+            class="edit-btn col-lg-4 col-md-3 col-sm-4 col-xs-6 col-xs-6"
+            @click="apply()"
+          >
+            <span class="caption text-uppercase">&nbsp;Apply</span>
+          </base-button>
+          <base-button
+            type="success"
+            class="edit-btn col-lg-4 col-md-3 col-sm-4 col-xs-6 col-xs-6"
+            @click="reset()"
+          >
+            <span class="caption text-uppercase">&nbsp;Reset</span>
+          </base-button>
         </template>
-        <div class="table-full-width table-responsive">
-          <task-list></task-list>
-        </div>
       </card>
     </div>
     <div class="col-lg-7">
       <card card-body-classes="table-full-width">
-        <h4 slot="header" class="card-title">Striped table</h4>
+        <h4 slot="header" class="title">Edit Record</h4>
         <el-table :data="tableData">
           <el-table-column
             min-width="150"
@@ -179,6 +207,8 @@ import TaskList from "@/components/Dashboard/TaskList";
 import config from "@/config";
 import { Table, TableColumn } from "element-ui";
 import datePicker from "@/components/dataPicker/datePicker.vue";
+import moment from "moment";
+import BaseButton from "~/components/BaseButton.vue";
 
 let bigChartData = [[0], [0], [0]];
 let bigChartLabels = ["Date"];
@@ -201,6 +231,7 @@ export default {
   name: "dashboard",
   components: {
     LineChart,
+    BaseButton,
     BarChart,
     TaskList,
     [Table.name]: Table,
@@ -209,45 +240,13 @@ export default {
   },
   data() {
     return {
-      startDate:(new Date(Date.now())),
-      endDate:(new Date(Date.now())),
-      tableData: [
-        {
-          id: 1,
-          name: "Dakota Rice",
-          Time: "19:20:50",
-          Machine: "Machine01",
-          WorkDid: "Updated",
-        },
-        {
-          id: 2,
-          name: "Minerva Hooper",
-          Time: "20:11:23",
-          Machine: "Machine22",
-          WorkDid: "Deleted",
-        },
-        {
-          id: 3,
-          name: "Sage Rodriguez",
-          Time: "08:22:21",
-          Machine: "Machine02",
-          WorkDid: "Updated",
-        },
-        {
-          id: 4,
-          name: "Philip Chaney",
-          Time: "22:31:00",
-          Machine: "Machine32",
-          WorkDid: "Updated",
-        },
-        {
-          id: 5,
-          name: "Doris Greene",
-          Time: "14:20:00",
-          Machine: "Machine02",
-          WorkDid: "Updated",
-        },
-      ],
+      minDate: moment("2020-08-01").format("YYYY-MM-DD"),
+      maxDate: moment("2020-08-28").format("YYYY-MM-DD"),
+      startDate: moment("2020-08-01").format("YYYY-MM-DD"),
+      endDate: moment("2020-08-28").format("YYYY-MM-DD"),
+      ChartData: [],
+      chartlabel: [],
+      tableData: [],
       bigLineChart: {
         activeIndex: 0,
         chartData: {
@@ -360,6 +359,30 @@ export default {
     },
   },
   methods: {
+    apply() {
+      let start = parseInt(moment(this.startDate).format("DD"));
+      let end = parseInt(moment(this.endDate).format("DD"));
+      console.log(start, end);
+      bigChartData = [];
+      bigChartLabels = [];
+      let temp = [],
+        humid = [],
+        ph = [];
+      for (let i = start - 1; i <= end - 1; i++) {
+        temp.push(this.chartData[0][i]);
+        humid.push(this.chartData[1][i]);
+        ph.push(this.chartData[2][i]);
+        bigChartLabels.push(i + 1);
+      }
+      bigChartData = [temp, humid, ph];
+      //console.log(bigChartData)
+      this.initBigChart(0);
+    },
+    reset() {
+      bigChartData = this.chartData;
+      bigChartLabels = this.chartlabel;
+      this.initBigChart(0);
+    },
     initBigChart(index) {
       let chartData = {
         datasets: [
@@ -376,14 +399,24 @@ export default {
     },
   },
   async created() {
+    const recordCount = await this.$strapi.$records.count();
+    let record = await this.$strapi.$records.find();
+    console.log(moment(record.published_at).format("YYYY-MM-DD hh:mm"));
+    for (let i = recordCount - 5; i < recordCount; i++) {
+      this.tableData.push({
+        id: record[i].id,
+        name: record[i].pic,
+        Time: moment(record[i].published_at).format("YYYY-MM-DD hh:mm"),
+        Machine: record[i].mac_sn,
+        WorkDid: record[i].work,
+      });
+    }
     //console.log(this.$strapi.user)
     try {
       const dataCount = await this.$strapi.$sensors.count();
-       /*updated_at,between,this.$store.state.pickerDateInfo.endDate,
+      /*updated_at,between,this.$store.state.pickerDateInfo.endDate,
        and,this.$store.state.pickerDateInfo.endDate*/
       console.log(dataCount);
-      console.log(this.$store.state.pickerDateInfo.startDate)
-      console.log(this.$store.state.pickerDateInfo.endDate)
       let datasize = 100;
       let temp = [],
         humid = [],
@@ -411,7 +444,10 @@ export default {
       }
 
       bigChartData = [temp, humid, ph];
+      this.chartData = bigChartData;
+      console.log(this.chartData);
       for (let i = 0; i < dataCount / datasize; i++) bigChartLabels[i] = i + 1;
+      this.chartlabel = bigChartLabels;
       //console.log(bigChartData);
       this.initBigChart(0);
     } catch (error) {
@@ -429,5 +465,8 @@ export default {
 }
 .xlabel {
   padding-left: 50%;
+}
+.title {
+  margin-right: 50px;
 }
 </style>

@@ -31,7 +31,7 @@ import 'vue2-daterange-picker/dist/vue2-daterange-picker.css'
                      opens:"right",
                      minDate:null,
                      maxDate:null,
-                     singleDatePicker:false,
+                     singleDatePicker:true,
                      timePicker:false,
                      timePicker24Hour:true,
                      showWeekNumbers:false,

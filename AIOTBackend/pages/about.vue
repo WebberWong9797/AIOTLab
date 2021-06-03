@@ -48,6 +48,8 @@ export default {
     };
   },
   async created() {
+    //let docClasses = document.body.classList;
+    //docClasses.add("white-content");
     const result = await axios.get(
       this.$store.state.BASE_URL + "/aiot-webcontent"
     );
@@ -63,6 +65,10 @@ export default {
       this.photo1 = result.data.aboutphoto[0].url
       this.photo2 = result.data.aboutphoto[1].url
     }
+  },
+  mounted() {
+    let docClasses = document.body.classList;
+    docClasses.add("white-content");
   },
 };
 </script>
