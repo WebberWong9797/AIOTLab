@@ -4,6 +4,7 @@
 
     <b-responsive class="mx-auto" max-width="1280">
       <b-container>
+      AHAS
         <b-button @click="getCategory2('all')">Show ALL</b-button>
         <b-row>
           <b-col
