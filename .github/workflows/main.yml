@@ -9,5 +9,5 @@ jobs:
       - uses: sreimers/pr-dependency-action@v0.4
         with:
           name: repo
-          repo: https://github.com/WebberWong9797/AIOTLab
+          repo: https://github.com/WebberWong9797/AIOTLab/tree/main/AIOTBackend
           secret: ${{ secrets.GITHUB_TOKEN }}
