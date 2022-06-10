@@ -1,0 +1,13 @@
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: sreimers/pr-dependency-action@v0.4
+        with:
+          name: repo
+          repo: https://github.com/WebberWong9797/AIOTLab
+          secret: ${{ secrets.GITHUB_TOKEN }}
