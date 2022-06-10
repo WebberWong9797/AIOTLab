@@ -2,8 +2,8 @@
   <v-container id="about" class="pa-0" fluid tag="section">
     <b-row class="ma-0" no-gutters>
       <b-col cols="6" md="6">
-        <img class="aboutimg" :src="require('~/assets/banner1.jpg')" />
-        <img class="aboutimg" :src="require('~/assets/banner2.jpg')" />
+        <img class="aboutimg" :src="'https://cms.aiotlab.hk' + photo1" />
+        <img class="aboutimg" :src="'https://cms.aiotlab.hk' + photo2" />
       </b-col>
       <b-col class="topIntro" cols="6" md="6">
         <div v-html="this.topIntro"></div
@@ -29,6 +29,8 @@ export default {
   data() {
     return {
       topIntro: "",
+      photo1: "",
+      photo2: "",
       rules: [
         [/\*\*(.*?)\*\*/g, "<b class=black--text>$1</b>"],
         [/__(.*?)__/g, "<u>$1</u>"],
@@ -46,6 +48,8 @@ export default {
     };
   },
   async created() {
+    //let docClasses = document.body.classList;
+    //docClasses.add("white-content");
     const result = await axios.get(
       this.$store.state.BASE_URL + "/aiot-webcontent"
     );
@@ -58,7 +62,13 @@ export default {
         html = html.replace(rule, template);
       });
       this.topIntro = html;
+      this.photo1 = result.data.aboutphoto[0].url
+      this.photo2 = result.data.aboutphoto[1].url
     }
+  },
+  mounted() {
+    let docClasses = document.body.classList;
+    docClasses.add("white-content");
   },
 };
 </script>

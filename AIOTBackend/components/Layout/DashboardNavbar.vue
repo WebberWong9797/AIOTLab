@@ -18,41 +18,10 @@
       </div>
       <a class="navbar-brand ml-xl-3 ml-5" href="#pablo">{{ routeName }}</a>
     </div>
-
+    <span class="d-lg-none">{{this.$strapi.user.username}}</span>
     <ul class="navbar-nav" :class="$rtl.isRTL ? 'mr-auto' : 'ml-auto'">
-      <div v-if="this.$store.getters.getuserInfo.loggedIn">
-        <base-dropdown
-          tag="li"
-          :menu-on-right="!$rtl.isRTL"
-          title-tag="a"
-          title-classes="nav-link"
-          class="nav-item"
-        >
-          <template slot="title">
-            <div class="notification d-none d-lg-block d-xl-block"></div>
-            <i class="tim-icons icon-sound-wave"></i>
-            <p class="d-lg-none">New Notifications</p>
-          </template>
-          <li class="nav-link">
-            <a href="#" class="nav-item dropdown-item"
-              >Mike John responded to your email</a
-            >
-          </li>
-          <li class="nav-link">
-            <a href="#" class="nav-item dropdown-item">You have 5 more tasks</a>
-          </li>
-          <li class="nav-link">
-            <a href="#" class="nav-item dropdown-item"
-              >Your friend Michael is in town</a
-            >
-          </li>
-          <li class="nav-link">
-            <a href="#" class="nav-item dropdown-item">Another notification</a>
-          </li>
-          <li class="nav-link">
-            <a href="#" class="nav-item dropdown-item">Another one</a>
-          </li>
-        </base-dropdown>
+      <div v-if="this.$strapi.user">
+        
         <base-dropdown
           tag="li"
           :menu-on-right="!$rtl.isRTL"
@@ -61,65 +30,20 @@
           title-classes="nav-link"
           menu-classes="dropdown-navbar"
         >
-          <template slot="title">
-            <div class="photo"><img src="" /></div>
+          <template slot="title">{{this.$strapi.user.username}}
+            <div class="photo"><img :src="this.$store.getters.getuserInfo.avatar" /></div>
             <b class="caret d-none d-lg-block d-xl-block"></b>
-            <p class="d-lg-none">Log out</p>
           </template>
-          <li class="nav-link">
-            <a href="#" class="nav-item dropdown-item">Profile</a>
+          <!--<li class="nav-link">
+            <span href="#" class="nav-item dropdown-item">Hello </span>
           </li>
-          <li class="nav-link">
-            <a href="#" class="nav-item dropdown-item">Settings</a>
-          </li>
-          <div class="dropdown-divider"></div>
+          <div class="dropdown-divider"></div>-->
           <li class="nav-link">
             <a href="#" class="nav-item dropdown-item" @click="logout()"
               >Log out</a
             >
           </li>
         </base-dropdown>
-      </div>
-      <div v-else>
-        <div class="search-bar input-group" @click="logModalVisible = true">
-          <button class="btn btn-link" id="search-button">
-            <i class="tim-icons icon-button-power"></i>
-            <span>Login</span>
-          </button>
-          <!-- You can choose types of search input -->
-        </div>
-        <modal
-          :show.sync="logModalVisible"
-          class=""
-          id="searchModal"
-          :centered="false"
-          :show-close="true"
-          ><b-row>
-            <base-input
-              v-model="Identifier"
-              type="text"
-              class="logDetails"
-              label="Identifier(Username / Email): "
-            ></base-input>
-          </b-row>
-          <b-row>
-            <base-input
-              v-model="password"
-              type="password"
-              class="logDetails"
-              label="Password: "
-            ></base-input>
-          </b-row>
-          <div class="errmsg">{{ this.errmsg }}</div>
-          <base-button
-            type="primary"
-            class="mr-3 col-lg-4 col-md-3 col-sm-4 col-xs-6 col-xs-6"
-            @click="login()"
-          >
-            <i class="tim-icons icon-wallet-43"></i>
-            <span class="caption text-uppercase"> Login </span>
-          </base-button>
-        </modal>
       </div>
     </ul>
   </base-nav>
@@ -134,6 +58,16 @@ export default {
     CollapseTransition,
     BaseNav,
     Modal,
+  },
+  async mounted(){
+    //console.log(this.$strapi.user)
+    if(this.$strapi.user!==null){
+      let result = await this.$strapi.find('users', {
+        username: this.$strapi.user.username
+      });
+      //console.log("result: ", result)
+      this.$store.commit('userInfo', result[0])
+    }
   },
   computed: {
     routeName() {
@@ -178,19 +112,9 @@ export default {
       this.$strapi.logout();
       this.$router.push("/home");
     },
-    async login() {
-      let x = await this.$strapi.login({
-        identifier: this.Identifier,
-        password: this.password,
-      });
-      try {
-        this.errmsg = x.e.message;
-      } catch (e) {
-        this.$router.push("/home");
-      }
-
-      console.log(x);
-    },
+    profile(){
+      this.$router.push("/user");
+    }
   },
 };
 </script>

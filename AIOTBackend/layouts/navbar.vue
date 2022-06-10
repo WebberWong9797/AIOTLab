@@ -20,17 +20,16 @@
       </div>
       <ul class="navbar-nav">
         <li class="nav-item active" v-for="(link, i) in button" :key="i">
-          <a class="nav-link" :href="link">{{ link }} </a>
+          <a class="nav-link" href="#" @click="login(link)">{{ link }} </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">LOGIN</a>
+        <li v-if="this.$strapi.user==null" class="nav-item">
+          <a class="nav-link" href="#" @click="login('login')">login</a>
         </li>
       </ul>
     </base-nav>
     <v-content class="ma-4" style="padding: 60px 0px 0px;">
       <Nuxt />
     </v-content>
-    <content-footer></content-footer>
   </div>
 </template>
 
@@ -47,11 +46,29 @@ export default {
   },
   data: () => ({
     sidebarBackground: "vue",
-    button: ["HOME", "ABOUT", "CONTACT", "NEWS", "BLOG", "DASHBOARD", ""],
+    button: ["home", "about", "contact", "blog", "dashboard"],
   }),
   mounted() {
     let docClasses = document.body.classList;
     docClasses.add("white-content");
+  },
+  methods: {
+    login(x) {
+      if (x == "dashboard" && this.$strapi.user !== null){
+        let docClasses = document.body.classList;
+        docClasses.add("dark-content");
+        this.$router.push("/dashboard");
+        //console.log("this is : ", this.$store.getters.getuserInfo.avatar.length)
+      } 
+      else if (
+        x == "dashboard" && this.$strapi.user == null
+      )
+      {
+        //console.log("this is : ", this.$store.getters.getuserInfo.avatar.length)
+        this.$router.push("/login");
+      }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+      else this.$router.push("/" + x);
+    },
   },
 };
 </script>

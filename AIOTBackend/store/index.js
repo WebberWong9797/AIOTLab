@@ -21,6 +21,10 @@ export const state = () => ({
     youtube: '',
     category: '',
   },
+  pickerDateInfo:{
+   startDate: null,
+   endDate: null,
+  },
 })
 export const mutations = {
   logout(state) {
@@ -31,13 +35,14 @@ export const mutations = {
     state.auth.team = ''
   },
   userInfo(state, result) {
+    console.log(result)
     state.auth.loggedIn = true
-    state.auth.username = result.user.username
+    state.auth.username = result.username
     state.auth.jwt = result.jwt
-    if (result.user.avatar === null) state.auth.avatar = ''
-    else state.auth.avatar = state.BASE_URL + result.user.avatar.url
-    state.auth.team = result.user.team
-    state.auth.email = result.user.email
+    if (result.avatar === null) state.auth.avatar = ''
+    else state.auth.avatar = state.BASE_URL + result.avatar.url
+    state.auth.team = result.team
+    state.auth.email = result.email
   },
   projectInfo(state, result) {
     state.projectInfo.Pid = result.data.id
@@ -58,6 +63,10 @@ export const mutations = {
   SET_DRAWER(state, payload) {
     state.drawer = payload
   },
+  setPickerDateInfo(state,result){
+  state.pickerDateInfo.startDate=result.startDate
+  state.pickerDateInfo.endDate=result.endDate
+  },
 }
 export const getters = {
   getuserInfo: (state) => {
@@ -66,6 +75,9 @@ export const getters = {
   getprojectInfo: (state) => {
     return state.projectInfo
   },
+  getPickerDateInfo:(state)=>{
+    return state.pickerDateInfo
+  }
 }
 export const actions = {}
 export const modules = {}

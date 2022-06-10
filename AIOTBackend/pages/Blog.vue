@@ -1,53 +1,44 @@
 <template>
   <b-container id="blog" class="pa-0" fluid tag="section">
-    <b-img
-      :src="require('~/assets/luke-matthews-T4PTfNwgbEM-unsplash.jpg')"
-      v-bind="$attrs"
-      class="text-center white--text align-center"
-      height="40vh"
-    >
-      <h1 class="display-2">AIOT Blog</h1>
-    </b-img>
+    <h1 class="display-2">AIOT Blog</h1>
 
     <b-responsive class="mx-auto" max-width="1280">
       <b-container>
-        <b-tabs
-          v-if="showTabs"
-          background-color="transparent"
-          centered
-          hide-slider
-        >
-          <b-tab
-            v-for="(tab, i) in uniqueCat"
-            :key="i"
-            @click="getCategory(tab)"
-          >
-            {{ tab }}
-          </b-tab>
-        </b-tabs>
+      AHAS
+        <b-button @click="getCategory2('all')">Show ALL</b-button>
         <b-row>
           <b-col
             v-for="(post, i) in posts"
             :key="i"
-            class="d-flex"
+            :style="post.show"
             cols="12"
             md="4"
           >
-            <mdb-card class="blogcard">
-              <mdb-card-image
-                class="blogimg"
-                :src="post.src"
-                alt="no image"
-              ></mdb-card-image>
-              <mdb-card-body>
-                <mdb-card-title>{{ post.title }}</mdb-card-title>
-                <mdb-card-text class="blogbody">{{ post.blurb }}</mdb-card-text>
-                <span>Tags : </span><br />
-                <b-button color="#252525" dark class="btn-sm">{{
-                  post.category
-                }}</b-button>
-              </mdb-card-body>
-            </mdb-card>
+              <mdb-card class="blogcard">
+                <img class="blogimg" :src="post.src" alt="no image" />
+                <mdb-card-body>
+                  <mdb-card-title>{{ post.title }}</mdb-card-title>
+                  <mdb-card-text class="blogbody">{{
+                    post.blurb
+                  }}</mdb-card-text>
+                  <span>Tags : </span><br />
+                  <b-row
+                    v-for="(tag, i) in post.tags"
+                    :key="i"
+                    class="d-flex"
+                    cols="12"
+                    md="4"
+                  >
+                    <b-button
+                      color="#252525"
+                      dark
+                      class="btn-sm"
+                      @click="getCategory2(tag.tag_name)"
+                      >{{ tag ? tag.tag_name : "None" }}</b-button
+                    >
+                  </b-row>
+                </mdb-card-body>
+              </mdb-card>
           </b-col>
         </b-row>
       </b-container>
@@ -109,6 +100,12 @@ export default {
     };
   },
   mounted() {
+    let docClasses = document.body.classList;
+    docClasses.add("white-content");
+  },
+  created() {
+    let docClasses = document.body.classList;
+    docClasses.add("white-content");
     fetch("https://cms.aiotlab.hk/projects")
       .then((res) => res.json())
       .then((data) => {
@@ -125,11 +122,13 @@ export default {
               "https://cms.aiotlab.hk/uploads/small_no_image_b495419a66.png?2144.96499998495";
           const blog = {
             id: data[i].id,
-            category: data[i].Category,
+            category: data[i].Category === null ? "None" : data[i].Category,
             date: data[i].updated_at,
             blurb: data[i].description,
             src: url,
             title: data[i].title,
+            tags: data[i].tags,
+            show: 'display: flex;',
           };
           console.log(blog);
           this.posts.push(blog);
@@ -140,6 +139,22 @@ export default {
       });
   },
   methods: {
+    async getCategory2(item) {
+      console.log(item);
+      //var post = this.posts
+      if (item == "all") {
+        for (let i = 0; i < this.posts.length; i++) this.posts[i].show = 'display: flex;';
+      } else {
+        for (let i = 0; i < this.posts.length; i++) {
+          console.log(item);
+          var obj = [];
+          for (let j = 0; j < this.posts[i].tags.length; j++)
+            obj.push(this.posts[i].tags[j].tag_name);
+          if (obj.includes(item)) this.posts[i].show = 'display: flex;';
+          else this.posts[i].show = 'display: none;';
+        }
+      }
+    },
     async getCategory(item) {
       console.log(item);
       this.posts = [];
@@ -147,6 +162,7 @@ export default {
       if (item === "ALL") cat = "/projects";
       else cat = "/projects/?Category=" + item;
       const result = await axios.get(this.$store.state.BASE_URL + cat);
+
       if (result.error) {
         console.log(result.error);
       } else {
@@ -163,6 +179,7 @@ export default {
             blurb: result.data[i].description,
             src: this.$store.state.BASE_URL + url,
             title: result.data[i].title,
+            tags: result.data[i].tags,
           };
           console.log(blog);
           this.posts.push(blog);
@@ -195,5 +212,19 @@ p.blogbody.card-text {
   max-height: 60px;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+.rounded {
+  border-radius: 8px !important;
+  cursor: pointer;
+}
+.blogimg {
+  height: 250px;
+  width: auto;
+}
+.card-wrapper .card-rotating {
+  height: auto;
+}
+.face.back {
+  height: auto;
 }
 </style>

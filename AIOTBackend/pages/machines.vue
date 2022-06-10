@@ -120,7 +120,7 @@
                   }}</span></template
                 >
                 <div
-                  class="font-icon-list col-lg-12 col-md-3 col-sm-4 col-xs-6 col-xs-6"
+                  class="font-icon-list col-lg-8 col-md-3 col-sm-4 col-xs-6 col-xs-6"
                   v-for="i in tab"
                   :key="i.id"
                 >
@@ -138,7 +138,7 @@
                       <base-button
                         type="danger"
                         class="btn-fill edit-btn"
-                        @click="deletep(i.macid)"
+                        @click="deletep(i.macid, i.num)"
                       >
                         <i class="tim-icons icon-align-left-2"></i>
                         <span class="caption text-uppercase">Delete </span>
@@ -207,7 +207,7 @@
                         type="primary"
                         class="mr-3 col-lg-2 col-md-3 col-sm-4 col-xs-6 col-xs-6"
                         :disabled="i.dis"
-                        @click="updateSensor(i.id, i.macid)"
+                        @click="updateSensor(i.id, i.macid, i.num)"
                       >
                         <i class="tim-icons icon-wallet-43"></i>
                         <span class="caption text-uppercase">Save </span>
@@ -238,7 +238,7 @@
                   <base-button
                     type="danger"
                     class="btn-fill edit-btn"
-                    @click="deletep(i.macid)"
+                    @click="deletep(i.macid, i.num)"
                   >
                     <i class="tim-icons icon-align-left-2"></i>
                     <span class="caption text-uppercase">Delete </span>
@@ -303,7 +303,7 @@
                     type="primary"
                     class="mr-3 col-lg-2 col-md-3 col-sm-4 col-xs-6 col-xs-6"
                     :disabled="i.dis"
-                    @click="updateSensor(i.id, i.macid)"
+                    @click="updateSensor(i.id, i.macid, i.num)"
                   >
                     <i class="tim-icons icon-wallet-43"></i>
                     <span class="caption text-uppercase">Save </span>
@@ -337,6 +337,7 @@ export default {
       createPopup: false,
       deletepopup: false,
       deleteid: null,
+      deletesn: null,
       newMachine: {
         S_N: "",
         aero_temp: null,
@@ -359,9 +360,9 @@ export default {
         password: "tiger",
       },
       publish: {
-        topic: 'iot/app/sam/testing',
+        topic: "iot/app/sam/testing",
         qos: 0,
-        payload: '{ "msg": "Hello, I am browser." }',
+        payload: '{ "msg": "SN002303006252506" }',
       },
       client: {
         connected: false,
@@ -369,23 +370,24 @@ export default {
     };
   },
   async created() {
-      const { host, port, endpoint, ...options } = this.mqttconnection;
-      const connectUrl = `ws://${host}:${port}${endpoint}`
-      try {
-        this.client = mqtt.connect(connectUrl, options);
-      } catch (error) {
-        console.log("mqtt.connect error", error);
-      }
-      this.client.on("connect", () => {
-        console.log("Connection succeeded!");
-      });
-      this.client.on("error", (error) => {
-        console.log("Connection failed", error);
-      });
-      this.client.on("message", (topic, message) => {
-        this.receiveNews = this.receiveNews.concat(message);
-        console.log(`Received message ${message} from topic ${topic}`);
-      });
+    if (!this.$strapi.user) this.$router.push("/login");
+    const { host, port, endpoint, ...options } = this.mqttconnection;
+    const connectUrl = `ws://${host}:${port}${endpoint}`;
+    try {
+      this.client = mqtt.connect(connectUrl, options);
+    } catch (error) {
+      console.log("mqtt.connect error", error);
+    }
+    this.client.on("connect", () => {
+      console.log("Connection succeeded!");
+    });
+    this.client.on("error", (error) => {
+      console.log("Connection failed", error);
+    });
+    this.client.on("message", (topic, message) => {
+      this.receiveNews = this.receiveNews.concat(message);
+      console.log(`Received message ${message} from topic ${topic}`);
+    });
   },
   async mounted() {
     const dataCount = await this.$strapi.$machines.count();
@@ -411,7 +413,7 @@ export default {
       for (let i = 0; i < this.machines.length / 4; i++) {
         let subitems = [];
         for (let j = i * 4; j < i * 4 + 4; j++) {
-          subitems.push(this.machines[j]);
+          if (this.machines[j] !== undefined) subitems.push(this.machines[j]);
         }
         tabsItem.push(subitems);
       }
@@ -419,27 +421,23 @@ export default {
     },
   },
   methods: {
-    createConnection() {
-
-    },
+    createConnection() {},
     doPublish() {
       const { topic, qos, payload } = this.publish;
-      try{
+      try {
         this.client.publish(topic, payload, qos, (error) => {
-        if (error) {
-          console.log("Publish error", error);
-        }
-      });
-      }
-      catch(error){
+          if (error) {
+            console.log("Publish error", error);
+          }
+        });
+      } catch (error) {
         console.log("Publish error", error);
       }
-      
     },
     editSensor(id) {
       this.machines[id].dis = !this.machines[id].dis;
     },
-    async updateSensor(id, macid) {
+    async updateSensor(id, macid, mac_sn) {
       await this.$strapi.$machines.update(macid, {
         aero_temp: this.machines[id].aero_temp || 0,
         hydro_temp: this.machines[id].hydro_temp || 0,
@@ -449,32 +447,54 @@ export default {
         hydro_ph: this.machines[id].hydro_ph || 0,
       });
       this.machines[id].dis = true;
+      await this.$strapi.$records.create({
+        work: "update",
+        pic: this.$strapi.user.username,
+        mac_sn: mac_sn,
+      });
+      const { topic, qos, payload } = this.publish;
+      try {
+        this.client.publish(topic, payload, qos, (error) => {
+          if (error) {
+            console.log("Publish error", error);
+          }
+        });
+      } catch (error) {
+        console.log("Publish error", error);
+      }
     },
     async createSensor() {
-      try{
+      try {
         await this.$strapi.$machines.create({
-        S_N: this.newMachine.S_N || "",
-        aero_temp: this.newMachine.aero_temp || 0,
-        hydro_temp: this.newMachine.hydro_temp || 0,
-        aero_humid: this.newMachine.aero_humid || 0,
-        hydro_humid: this.newMachine.hydro_humid || 0,
-        aero_ph: this.newMachine.aero_ph || 0,
-        hydro_ph: this.newMachine.hydro_ph || 0,
-      });
-      this.createPopup = false;
-      window.location.reload(true);
-      }
-      catch(error){
-
-      }
-      
+          S_N: this.newMachine.S_N || "",
+          aero_temp: this.newMachine.aero_temp || 0,
+          hydro_temp: this.newMachine.hydro_temp || 0,
+          aero_humid: this.newMachine.aero_humid || 0,
+          hydro_humid: this.newMachine.hydro_humid || 0,
+          aero_ph: this.newMachine.aero_ph || 0,
+          hydro_ph: this.newMachine.hydro_ph || 0,
+        });
+        this.createPopup = false;
+        await this.$strapi.$records.create({
+          work: "create",
+          pic: this.$strapi.user.username,
+          mac_sn: this.newMachine.S_N,
+        });
+        window.location.reload(true);
+      } catch (error) {}
     },
-    deletep(id) {
+    deletep(id, mac_sn) {
       this.deletepopup = true;
       this.deleteid = id;
+      this.deletesn = mac_sn;
     },
     async deleteSensor() {
       await this.$strapi.$machines.delete(this.deleteid);
+      await this.$strapi.$records.create({
+        work: "delete",
+        pic: this.$strapi.user.username,
+        mac_sn: this.deletesn,
+      });
       window.location.reload(true);
     },
   },
@@ -510,7 +530,7 @@ input.form-control {
 .el-date-picker .el-input .el-input__inner:focus {
   color: #89d2d2 !important;
 }
-.mactabs{
+.mactabs {
   width: 100%;
 }
 </style>
